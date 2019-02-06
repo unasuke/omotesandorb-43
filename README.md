@@ -1,24 +1,4 @@
-# TODO: スライドのタイトル
+# Omotesando.rb #43
+[表参道.rb #43 - connpass](https://omotesandorb.connpass.com/event/118318/)
 
-TODO: スライドの説明
-
-## 作者向け
-
-### 表示
-
-    rake
-
-### 公開
-
-    rake publish
-
-## 閲覧者向け
-
-### インストール
-
-    gem install rabbit-slide-unasuke-omotesandorb-43
-
-### 表示
-
-    rabbit rabbit-slide-unasuke-omotesandorb-43.gem
-
+view slide https://unasuke.github.io/omotesandorb-43/
