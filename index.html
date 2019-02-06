@@ -4,7 +4,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>reveal.js</title>
+		<title>kibela2esaと正規表現 - 表参道.rb #43</title>
 
 		<link rel="stylesheet" href="css/reveal.css">
 		<link rel="stylesheet" href="css/theme/white.css">
@@ -25,8 +25,236 @@
 	<body>
 		<div class="reveal">
 			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
+				<section>
+					<h1>kibela2esa<br>と<br>正規表現</h1>
+					<p>2019-02-07</p>
+					<p>表参道.rb #43</p>
+					<p>うなすけ</p>
+				</section>
+				<section>
+					<h2>自己紹介</h2>
+					<div class="flex-container">
+						<div class='item-40'>
+							<img src="img/icon_raw.jpg">
+						</div>
+						<div class='item-60'>
+							<ul>
+								<li>名前: うなすけ</li>
+								<li>所属: 株式会社バンク
+									<ul><li>サーバーサイドエンジニア</li></ul>
+								</li>
+								<li>Twitter: <a href="https://twitter.com/yu_suke1994">@yu_suke1994</a></li>
+								<li>GitHub: <a href="https://github.com/unasuke">@unasuke</a></li>
+								<li>Mastodon <a href="https://mstdn.unasuke.com/@unasuke">@unasuke@mstdn.unasuke.com</a></li>
+							</ul>
+						</div>
+					</div>
+				</section>
+				<section>
+					<h2>kibela2esa</h2>
+					<blockquote class="twitter-tweet" data-lang="ja"><p lang="ja" dir="ltr">【お知らせ】サードパーティesaツールに “HolyGrail/kibela2esa“ を追加しました<a href="https://t.co/oWmdHuuhnX">https://t.co/oWmdHuuhnX</a><a href="https://t.co/a5jGUIbngX">https://t.co/a5jGUIbngX</a></p>&mdash; esa_io (@esa_io) <a href="https://twitter.com/esa_io/status/1090837335531433984?ref_src=twsrc%5Etfw">2019年1月31日</a></blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+					<p>kibelaの記事をesaに移行するscript</p>
+					<small>gemではない</small>
+				</section>
+				<section>
+					<h2>kibela2esaにおける正規表現</h2>
+					<pre><code class='ruby'>TEAM='unasuke'
+TITLE_PATTERN = %r[\A.*/kibela-#{TEAM}-\d+/(?&lt;kind&gt;wikis|blogs)/(?&lt;path&gt;[[:print:]]*/)*(?&lt;id&gt;\d)+-(?&lt;name&gt;[[:print:]]*)\.md\z]
+ATTACHMENT_PATTERN = %r[^(?~http)(\.\./)*attachments/(?&lt;attachment_name&gt;\d+\.(png|JPG|jpg|jpeg|gif|PNG))]</code></pre>
+					<small><a href="https://github.com/HolyGrail/kibela2esa/blob/939f5e8da54749d56360f370c6394bdb8862cdce/kibela.rb#L6-L7">kibela.rb#L6-L7</a></small>
+					<p style="font-size: 5rem; font-weight: bold;">ナニコレ？？？</p>
+				</section>
+				<section>
+					<h2>kibela2esaにおける正規表現</h2>
+					<p>みやすく改行してみましょう</p>
+					<pre><code class='ruby'>TEAM='unasuke'
+TITLE_PATTERN = %r[\A.*
+	/kibela-#{TEAM}-\d+
+	/(?&lt;kind&gt;wikis|blogs)
+	/(?&lt;path&gt;[[:print:]]*/)*
+	(?&lt;id&gt;\d)+-(?&lt;name&gt;[[:print:]]*)\.md\z]x
+ATTACHMENT_PATTERN = %r[^(?~http)
+	(\.\./)*attachments/
+	(?&lt;attachment_name&gt;\d+\.
+		(png|JPG|jpg|jpeg|gif|PNG))
+	]x</code></pre>
+						<small>雑に改行を入れましたが、これも正しい正規表現です</small>
+				</section>
+				<section>
+					<h2>正規表現の説明の前に</h2>
+					<p>kibelaのexportされたデータを見てみましょう</p>
+				</section>
+				<section>
+					<h2>正規表現の説明の前に</h2>
+					<h3>kibelaのexportされたデータ</h3>
+					<img src="https://i.imgur.com/b8L56Yx.png" width="60%">
+				</section>
+				<section>
+					<h2>正規表現の説明の前に</h2>
+					<h3>kibelaのexportされたデータ</h3>
+					<ul>
+						<li>kibela-unasuke-0/attachments/3.png</li>
+						<li>kibela-unasuke-0/wikis/2019/01/18/1-some.md</li>
+						<li>kibela-unasuke-0/wikis/other/dir/2-hogehoge.md</li>
+						<li>kibela-unasuke-0/blogs/unasuke/3-my_memo.md</li>
+					</ul>
+				</section>
+				<section>
+					<h2>kibelaのexportされたデータ</h2>
+					<h3>一般化してみましょう</h3>
+					<ul>
+						<li>kibela-unasuke-*/attachments/*.png</li>
+						<li>kibela-unasuke-*/wikis/**/1-some.md</li>
+						<li>kibela-unasuke-*/wikis/**/2-hogehoge.md</li>
+						<li>kibela-unasuke-*/blogs/**/3-my_memo.md</li>
+					</ul>
+				</section>
+				<section>
+					<h2>kibelaのexportされたデータ</h2>
+					<h3>一般化してみましょう 2</h3>
+					<ul>
+						<li>kibela-unasuke-*/attachments/*.png</li>
+						<li>kibela-unasuke-*/wikis/**/*-*.md</li>
+						<li>kibela-unasuke-*/wikis/**/*-*.md</li>
+						<li>kibela-unasuke-*/blogs/**/*-*.md</li>
+					</ul>
+					<br>
+					<br>
+					<p>あーなんとなくわかってきた</p>
+				</section>
+				<section>
+					<h2>exportされたデータの構造</h2>
+					<h3>記事 (blogs, wikis)</h3>
+					<ol style="font-size: 85%;">
+						<li>kibela-(team)-(数字)/ がトップ</li>
+						<li>blogs/ もしくは wikis/が続く</li>
+						<li>(投稿者)/(番号)-(タイトル).md (blogの場合)</li>
+						<li>(カテゴリ)/(階層)/(番号)-(タイトル).md (wikiの場合)</li>
+					</ol>
+					<div class="fragment">
+						<p>じゃあこれを正規表現にしていきましょう</p>
+					</div>
+				</section>
+				<section>
+					<h2>exportされたデータの構造</h2>
+					<h3>記事 (blogs, wikis) の正規表現</h3>
+					<pre><code class="ruby">TITLE_PATTERN = %r[
+\A.* # 先頭に任意の文字列を許容
+  /kibela-#{TEAM}-\d+ # /kibela-team名-数値 にマッチ
+  /(wikis|blogs)      # /wikis か /blogs にマッチ
+  /([[:print:]]*/)*   # /任意の文字列 の0回以上の連続にマッチ
+  (\d)+-([[:print:]]*)\.md # 数値-任意の文字列.md にマッチ
+  \z # 文字列の末尾
+]x</code></pre>
+					<p>正規表現はできた……</p>
+					<p>ので、マッチした部分を取り出したい</p>
+				</section>
+				<section>
+					<h2>正規表現のキャプチャ</h2>
+					<blockquote>
+						丸括弧 ( ) によってキャプチャをすることができます。 
+					</blockquote>
+					<blockquote>
+1,2,... ではなく、名前を付けることができます。 (?&lt;name&gt;pat)もしくは(?'name'pat)と記述します。
+					</blockquote>
+					<a href='https://docs.ruby-lang.org/ja/latest/doc/spec=2fregexp.html'>https://docs.ruby-lang.org/ja/latest/doc/spec=2fregexp.html</a>
+				</section>
+				<section>
+					<h2>記事 (blogs, wikis) の正規表現</h2>
+					<h3>正規表現のキャプチャ</h3>
+					<pre><code class='ruby'>TITLE_PATTERN = %r[\A.*
+	/kibela-#{TEAM}-\d+
+	/(?&lt;kind&gt;wikis|blogs)
+	/(?&lt;path&gt;[[:print:]]*/)*
+	(?&lt;id&gt;\d)+-(?&lt;name&gt;[[:print:]]*)\.md\z]x</code></pre>
+	<pre><code class="ruby">regexp = TITLE_PATTERN.match(filepath)
+regexp[:kind] # これでblogsなのかwikisなのかわかる
+regexp[:path] # これで記事のカテゴリがわかる
+regexp[:name] # これで記事の名前が取れる</code></pre>
+				</section>
+				<section>
+					<h2>第一関門突破🎉🎉</h2>
+				</section>
+				<section>
+					<h2>第二関門😨</h2>
+					<pre><code class="ruby">ATTACHMENT_PATTERN = %r[^(?~http)
+  (\.\./)*attachments/
+  (?&lt;attachment_name&gt;\d+\.
+    (png|JPG|jpg|jpeg|gif|PNG))
+  ]x</code></pre>
+				</section>
+				<section>
+					<h2>kibelaの記事に貼られた画像</h2>
+					<pre><code class='html'>&lt;img
+ title='foo'
+ src='../../../../attachments/6.png' # この'6.png'が欲しい
+ width="662"
+ data-meta='{"width":662,"height":195}'&gt;</code></pre>
+<p>ちなみにこれはmarkdown内に書かれています</p>
+				</section>
+				<section>
+					<h2>kibelaの記事に貼られた画像</h2>
+					<h3>srcの中を取得したい</h3>
+					<blockquote class="twitter-tweet" data-lang="ja"><p lang="ja" dir="ltr">むしゃくしゃしてHTML tagを含むmarkdownをNokoginiに投げたらいい感じの結果が帰ってきて最高の気分</p>&mdash; うなすけ (@yu_suke1994) <a href="https://twitter.com/yu_suke1994/status/1089215416986030081?ref_src=twsrc%5Etfw">2019年1月26日</a></blockquote>
+				</section>
+				<section>
+					<h2>kibelaの記事に貼られた画像</h2>
+					<h3>以下の条件を満たす場合のみ</h3>
+					<ul>
+						<li>full URLでなく相対path</li>
+						<li>階層は任意の深さ</li>
+						<li>attachments/数字.拡張子 で終わる</li>
+					</ul>
+				</section>
+				<section>
+					<h2>kibelaの記事に貼られた画像</h2>
+					<h3>以下の条件を満たす場合のみ</h3>
+					<ul>
+						<li>full URLでなく相対path ← 地味にキツい</li>
+						<li>階層は任意の深さ ← わかる</li>
+						<li>attachments/数字.拡張子 で終わる ← 楽勝</li>
+					</ul>
+				</section>
+				<section>
+					<h2>非包含演算子</h2>
+					<blockquote>(?~式) という記法で、式にマッチする文字列を含まない任意の文字列にマッチします。</blockquote>
+					<a href='https://docs.ruby-lang.org/ja/latest/doc/spec=2fregexp.html'>https://docs.ruby-lang.org/ja/latest/doc/spec=2fregexp.html</a>
+					<p>最高！！</p>
+				</section>
+				<section>
+					<h2>非包含演算子について</h2>
+					<ul>
+						<li>Ruby 2.4.1から使用可能</li>
+						<li>田中哲さんによる提案がもと</li>
+						<ul><li><a href="https://staff.aist.go.jp/tanaka-akira/pub/prosym49-akr-presen.pdf">正規表現における非包含オペレータの提案</a></li></ul>
+						<li>正規表現エンジンOnigmoに実装されて使用可能に</li>
+					</ul>
+					<br>
+					<br>
+					<small>言語標準でこの機能が使えるのはRubyだけ？</small>
+				</section>
+				<section>
+					<h2>exportされたデータの構造</h2>
+					<h3>画像名の正規表現</h3>
+					<pre><code class="ruby">ATTACHMENT_PATTERN = %r[
+  ^ # 文字列の先頭
+  (?~http) # http で開始しない
+  (\.\./)*attachments/ # 任意の階層/attachmentsにマッチ
+	(?&lt;attachment_name&gt;\d+ # 画像名(数字)
+  \.(png|JPG|jpg|jpeg|gif|PNG)) # 画像名(拡張子)
+	]x</code></pre>
+				</section>
+				<section>
+					<h2>まとめ</h2>
+					<ul>
+						<li>非包含演算子は便利</li>
+						<ul><li>Rubyで書いてよかった</li></ul>
+						<li>正規表現は便利</li>
+						<ul><li>容易に読みにくくできるので注意</li></ul>
+						<li><a href="https://github.com/HolyGrail/kibela2esa">HolyGrail/kibela2esa</a>にstarお願いします</li>
+					</ul>
+				</section>
 			</div>
 		</div>
 
